@@ -1,0 +1,107 @@
+site_name: Ludwig's Notebook
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - navigation.footer
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  palette: 
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+# FIXME: social cairo error
+plugins:
+  - blog:
+      categories_allowed:
+        - 技术
+        - 基础
+        - 项目
+        - 生活
+      categories_slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - search:
+      separator: '[\s\u200b\-]'
+  # - social
+
+# extra:
+#   social:
+#     - icon: fontawesome/brands/github
+#       link: https://github.com/cs32963
+
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra_javascript:
+  # - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+copyright: |
+  &copy; 2023 <a href="https://github.com/cs32963"  target="_blank" rel="noopener">Ludwig</a>
+
+nav:
+  - 主页: 
+    - 写在前面: index.md
+    - 学生生涯反思: retrospect.md
+    - 如何成为优秀的算法工程师: become_better.md
+  - 技术路线:
+    - python: roadmap/python.md
+    - c++: roadmap/c++.md
+  - 算法学习:
+    - 为什么要刷算法题: algorithms/index.md
+    - 学习路线: algorithms/roadmap.md
+    - 常见算法:
+      - 动态规划: algorithms/dp.md
+      - 贪心: algorithms/greedy.md
+      - 二分: algorithms/binary_search.md
+  - 文章:
+    - blog/index.md
