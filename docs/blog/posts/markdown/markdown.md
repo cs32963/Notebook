@@ -82,7 +82,7 @@ Transformer-based Models[^attention][^bert]
 支持添加图片标题
 
 <figure markdown>
-  ![一只可爱的猫猫](./cat.png)
+  ![一只可爱的猫猫](./cat.png){width="500"}
   <figcaption>一只可爱的猫猫</figcaption>
 </figure>
 
