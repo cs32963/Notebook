@@ -83,6 +83,12 @@ Transformer-based Models[^attention][^bert]
 
 <figure markdown>
   ![一只可爱的猫猫](./cat.png){width="500"}
+
+  一只可爱的猫猫
+</figure>
+
+<figure markdown>
+  ![一只可爱的猫猫](./cat.png){width="500"}
   <figcaption>一只可爱的猫猫</figcaption>
 </figure>
 
