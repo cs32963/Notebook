@@ -79,7 +79,8 @@ transformers库采用[单模型文件策略](https://huggingface.co/blog/zh/tran
 
 <figure markdown>
   ![模型文件大纲](./outline.png){width="400"}
-  <figcaption>模型文件大纲</figcaption>
+
+  模型文件大纲
 </figure>
 
 不难猜测，LlamaModel类就是我们要找的模型主干，而LlamaAttention、LlamaMLP等类则是模型中具体的网络模块。更进一步，如果你对Transformer架构比较熟悉的话，可能会猜测LlamaDecoderLayer是每一层的Transformer网络，其中包含了LlamaAttention和LlamaMLP模块。

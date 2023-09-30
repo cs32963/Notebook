@@ -1,5 +1,6 @@
 ---
 date: 2023-05-23
+readtime: 5
 authors:
   - ludwig
 categories:
