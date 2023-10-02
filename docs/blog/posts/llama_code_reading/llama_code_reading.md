@@ -73,6 +73,8 @@ transformers库采用[单模型文件策略](https://huggingface.co/blog/zh/tran
 
 ### 了解代码结构
 
+在阅读具体的实现前，应当对代码的整体结构逻辑有所了解。这一部分不需要搞清楚每一个细节，但是需要了解模型的实现代码是如何组织的。
+
 #### 阅读大纲
 
 我们首先观察一下`modeling_llama.py`文件里有哪些类和函数，在vscode中打开左边的大纲。
@@ -87,9 +89,9 @@ transformers库采用[单模型文件策略](https://huggingface.co/blog/zh/tran
 
 #### LlamaForCausalLM
 
-观察LlamaForCausalLM类，可以看到它包含一个LlamaModel对象和一个线性的lm_head，后者用于计算下一个token的概率分布。
+观察LlamaForCausalLM类
 
-```python title="modeling_llama.py" linenums="727-738" hl_lines="6 9"
+```python title="modeling_llama.py" linenums="727" hl_lines="6 9"
 class LlamaForCausalLM(LlamaPreTrainedModel):
     _tied_weights_keys = ["lm_head.weight"]
 
@@ -104,11 +106,61 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
         self.post_init()
 ```
 
+可以看到它包含一个LlamaModel对象和一个线性的lm_head，后者用于计算下一个token的概率分布。
+
+#### LlamaModel
+
+观察LlamaModel类
+
+```python title="modeling_llama.py" linenums="547" hl_lines="14-16"
+class LlamaModel(LlamaPreTrainedModel):
+    """
+    Transformer decoder consisting of *config.num_hidden_layers* layers. Each layer is a [`LlamaDecoderLayer`]
+
+    Args:
+        config: LlamaConfig
+    """
+
+    def __init__(self, config: LlamaConfig):
+        super().__init__(config)
+        self.padding_idx = config.pad_token_id
+        self.vocab_size = config.vocab_size
+
+        self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size, self.padding_idx)
+        self.layers = nn.ModuleList([LlamaDecoderLayer(config) for _ in range(config.num_hidden_layers)])
+        self.norm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+
+        self.gradient_checkpointing = False
+        # Initialize weights and apply final processing
+        self.post_init()
+```
+
+可以看到它包含一个Embedding层、一系列的LlamaDecoderLayer、和一个LlamaRMSNorm模块。
+
+#### LlamaDecoderLayer
+
+观察llamaDecoderLayer类
+
+```python title="modeling_llama.py" linenums="371" hl_lines="5-8"
+class LlamaDecoderLayer(nn.Module):
+    def __init__(self, config: LlamaConfig):
+        super().__init__()
+        self.hidden_size = config.hidden_size
+        self.self_attn = LlamaAttention(config=config)
+        self.mlp = LlamaMLP(config)
+        self.input_layernorm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.post_attention_layernorm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+```
+
+其包括了Transformer结构中最重要的两个模块，即self-attention和FFN，分别是一个LlamaAttention对象和LlamaMLP对象，此外还有两个LlamaRMSNorm对象。
+
 ### 阅读具体实现
 
-#### LlamaMLP
+下面我们来阅读模型的具体实现，并且将重点放在Llama模型相对于最早的Transformer采用了哪些新的技术和优化。
 
 #### RMSNorm
+
+LayerNorm[^layernorm]是一种稳定深度神经网络训练的技术，Llama使用的是RMSNorm[^rmsnorm]，计算效率更高。
 
 ```python title="modeling_llama.py" linenums="75-89"
 class LlamaRMSNorm(nn.Module):
@@ -128,8 +180,13 @@ class LlamaRMSNorm(nn.Module):
         return self.weight * hidden_states.to(input_dtype)
 ```
 
+#### LlamaMLP
+
 #### Rotary Embedding
 
+## 本文未讨论的内容
+
+大模型的并行训练与推理
 
 ## 延伸阅读
 
@@ -140,3 +197,5 @@ class LlamaRMSNorm(nn.Module):
 
 [^llama]: Touvron et al. [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) (arXiv 2023)
 [^attention]: Vaswani et al. [Attention Is All You Need.](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf) (NIPS 2017)
+[^layernorm]: Ba et al. [Layer Normalization](https://arxiv.org/abs/1607.06450) (arXiv 2023)
+[^rmsnorm]: Zhang et al. [Root Mean Square Layer Normalization](https://papers.nips.cc/paper_files/paper/2019/file/1e8a19426224ca89e83cef47f1e7f53b-Paper.pdf) (NIPS 2019)
