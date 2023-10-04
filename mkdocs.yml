@@ -94,8 +94,12 @@ nav:
     - 学生生涯反思: retrospect.md
     - 如何成为优秀的算法工程师: become_better.md
   - 技术路线:
-    - python: roadmap/python.md
-    - c++: roadmap/c++.md
+    - 引言: roadmap/index.md
+    - 计算机基础:
+      - 导论: roadmap/cs_intro.md
+    - 编程语言:
+      - Python: roadmap/python.md
+      - C++: roadmap/c++.md
   - 算法学习:
     - 坚持刷算法题的好处: algorithms/index.md
     - 学习路线: algorithms/roadmap.md
