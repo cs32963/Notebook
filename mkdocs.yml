@@ -97,11 +97,14 @@ nav:
     - python: roadmap/python.md
     - c++: roadmap/c++.md
   - 算法学习:
-    - 为什么要刷算法题: algorithms/index.md
+    - 坚持刷算法题的好处: algorithms/index.md
     - 学习路线: algorithms/roadmap.md
     - 常见算法:
       - 动态规划: algorithms/dp.md
       - 贪心: algorithms/greedy.md
       - 二分: algorithms/binary_search.md
+    - 题单:
+      - Codeforces: algorithms/codeforces_problem_list.md
+      - LeetCode: algorithms/leetcode_problem_list.md
   - 文章:
     - blog/index.md
