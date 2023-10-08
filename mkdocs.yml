@@ -108,6 +108,7 @@ nav:
       - 贪心: algorithms/greedy.md
       - 二分: algorithms/binary_search.md
       - 单调栈: algorithms/monotonic_stack.md
+      - 递归: algorithms/recursion.md
     - 题单:
       - Codeforces: algorithms/codeforces_problem_list.md
       - LeetCode: algorithms/leetcode_problem_list.md
