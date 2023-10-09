@@ -87,7 +87,7 @@ transformers库采用[单模型文件策略](https://huggingface.co/blog/zh/tran
 
 不难猜测，LlamaModel类就是我们要找的模型主干，而LlamaAttention、LlamaMLP等类则是模型中具体的网络模块。更进一步，如果你对Transformer架构比较熟悉的话，可能会猜测LlamaDecoderLayer是每一层的Transformer网络，其中包含了LlamaAttention和LlamaMLP模块。
 
-#### LlamaForCausalLM
+#### LlamaForCausalLM类
 
 观察LlamaForCausalLM类
 
@@ -108,7 +108,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
 
 可以看到它包含一个LlamaModel对象和一个线性的lm_head，后者用于计算下一个token的概率分布。
 
-#### LlamaModel
+#### LlamaModel类
 
 观察LlamaModel类
 
@@ -137,7 +137,7 @@ class LlamaModel(LlamaPreTrainedModel):
 
 可以看到它包含一个Embedding层、一系列的LlamaDecoderLayer、和一个LlamaRMSNorm模块。
 
-#### LlamaDecoderLayer
+#### LlamaDecoderLayer类
 
 观察llamaDecoderLayer类
 
@@ -162,7 +162,7 @@ class LlamaDecoderLayer(nn.Module):
 
 LayerNorm[^layernorm]是一种稳定深度神经网络训练的技术，Llama使用的是RMSNorm[^rmsnorm]，计算效率更高。
 
-```python title="modeling_llama.py" linenums="75-89"
+```python title="modeling_llama.py" linenums="75"
 class LlamaRMSNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-6):
         """
@@ -180,13 +180,54 @@ class LlamaRMSNorm(nn.Module):
         return self.weight * hidden_states.to(input_dtype)
 ```
 
-#### LlamaMLP
+#### Pre-LayerNorm
+
+原始的Transformer使用post-layernorm，研究表明pre-layernorm会使得训练更加稳定[^prenorm]。
+
+#### SwiGLU
+
+在Transformer的FFN实现中，SwiGLU被证明是性能较好一种实现[^swiglu]。
+
+```python title="modeling_llama.py" linenums="191"
+class LlamaMLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.pretraining_tp = config.pretraining_tp
+        self.hidden_size = config.hidden_size
+        self.intermediate_size = config.intermediate_size
+        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=False)
+        self.act_fn = ACT2FN[config.hidden_act]
+
+    def forward(self, x):
+        if self.pretraining_tp > 1:
+            slice = self.intermediate_size // self.pretraining_tp
+            gate_proj_slices = self.gate_proj.weight.split(slice, dim=0)
+            up_proj_slices = self.up_proj.weight.split(slice, dim=0)
+            down_proj_slices = self.down_proj.weight.split(slice, dim=1)
+
+            gate_proj = torch.cat([F.linear(x, gate_proj_slices[i]) for i in range(self.pretraining_tp)], dim=-1)
+            up_proj = torch.cat([F.linear(x, up_proj_slices[i]) for i in range(self.pretraining_tp)], dim=-1)
+
+            intermediate_states = (self.act_fn(gate_proj) * up_proj).split(slice, dim=2)
+            down_proj = [F.linear(intermediate_states[i], down_proj_slices[i]) for i in range(self.pretraining_tp)]
+            down_proj = sum(down_proj)
+        else:
+            down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
+
+        return down_proj
+```
+
+实际中会调整中间层的大小，来使得参数量和计算量与原始的FFN实现相当（常见的中间层维度是hidden_size的$\frac{8}{3}$倍左右，和4倍大小的中间层的参数量和计算量相当）。
 
 #### Rotary Embedding
 
+Llama的位置编码
+
 ## 本文未讨论的内容
 
-大模型的并行训练与推理
+大模型的并行训练与推理，作为未来的学习计划
 
 ## 延伸阅读
 
@@ -199,3 +240,5 @@ class LlamaRMSNorm(nn.Module):
 [^attention]: Vaswani et al. [Attention Is All You Need.](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf) (NIPS 2017)
 [^layernorm]: Ba et al. [Layer Normalization](https://arxiv.org/abs/1607.06450) (arXiv 2023)
 [^rmsnorm]: Zhang et al. [Root Mean Square Layer Normalization](https://papers.nips.cc/paper_files/paper/2019/file/1e8a19426224ca89e83cef47f1e7f53b-Paper.pdf) (NIPS 2019)
+[^swiglu]: Shazeer et al. [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202) (arXiv 2020)
+[^prenorm]: Xiong et al. [On Layer Normalization in the Transformer Architecture](http://proceedings.mlr.press/v119/xiong20b/xiong20b.pdf) (ICML 2020)
