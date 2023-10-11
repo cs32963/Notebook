@@ -11,6 +11,16 @@
 > 3. The future might belong to people who understand how to utilize foundation models as tools for their personal development. While over-reliance on such models might have some negative impact on education, the best students know how to use those models wisely.
 > 4. Prof. Hinton believes in Turing test, and that LLMs such as GPT-4 really have understood language and the world. Prof. Li, on the other hand, disagrees.
 
+## [Dan Klein: Are LLMs the Beginning or End of NLP? (2023.8.18)](https://www.youtube.com/watch?v=KVDKWrsP3es&list=LL&index=12)
+
+> Quotes:
+>
+> 1. LLMs open up a new research eco-system, and will be an important part of it.
+
+## [John Schulman: Reinforcement Learning from Human Feedback: Progress and Challenges (2023.4.19)](https://www.youtube.com/watch?v=hhiLw5Q_UFg)
+
+难得的由OpenAI内部的学者向公众介绍RLHF的技术，能看出OpenAI在RLHF方面的努力与积累。
+
 ## [Steve Jobs' Stanford Commencement Address (2005)](https://www.youtube.com/watch?v=Hd_ptbiPoXM)
 
 > Quotes:
