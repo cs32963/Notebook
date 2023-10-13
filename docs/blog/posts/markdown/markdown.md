@@ -72,6 +72,13 @@ $$
 
 [Material for MkDocs Reference](https://squidfunk.github.io/mkdocs-material/reference/)
 
+## Annotations
+
+Steve Jobs founded Apple. (1)
+{.annotate}
+
+1. in 1976
+
 ## 文献引用
 
 Transformer[^attention]
