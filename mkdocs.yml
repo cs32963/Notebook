@@ -112,6 +112,7 @@ nav:
       - 二分: algorithms/binary_search.md
       - 单调栈: algorithms/monotonic_stack.md
       - 递归: algorithms/recursion.md
+      - 位运算: algorithms/bitwise_ops.md
     - 有趣的问题:
       - 蚂蚁行进问题: algorithms/ants.md
       - 约瑟夫问题: algorithms/josephus.md
