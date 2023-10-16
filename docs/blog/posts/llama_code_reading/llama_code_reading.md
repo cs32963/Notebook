@@ -1,6 +1,6 @@
 ---
 date: 2023-09-29
-readtime: 10
+readtime: 30
 authors:
   - ludwig
 categories:
@@ -160,9 +160,9 @@ class LlamaDecoderLayer(nn.Module):
 
 #### RMSNorm
 
-LayerNorm[^layernorm]是一种稳定深度神经网络训练的技术，Llama使用的是RMSNorm[^rmsnorm]，计算效率更高。
+LayerNorm[^layernorm]是一种稳定深度神经网络训练的技术，通过对激活值向量进行normalize操作来稳定深度神经网络的训练。Llama使用的是RMSNorm[^rmsnorm]，去掉了re-centering的计算，效率高于经典的LayerNorm。
 
-```python title="modeling_llama.py" linenums="75"
+```python title="modeling_llama.py" linenums="75" hl_lines="13-15"
 class LlamaRMSNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-6):
         """
@@ -180,15 +180,11 @@ class LlamaRMSNorm(nn.Module):
         return self.weight * hidden_states.to(input_dtype)
 ```
 
-#### Pre-LayerNorm
-
-原始的Transformer使用post-layernorm，研究表明pre-layernorm会使得训练更加稳定[^prenorm]。
-
 #### SwiGLU
 
 在Transformer的FFN实现中，SwiGLU被证明是性能较好一种实现[^swiglu]。
 
-```python title="modeling_llama.py" linenums="191"
+```python title="modeling_llama.py" linenums="191" hl_lines="26"
 class LlamaMLP(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -219,11 +215,29 @@ class LlamaMLP(nn.Module):
         return down_proj
 ```
 
-实际中会调整中间层的大小，来使得参数量和计算量与原始的FFN实现相当（常见的中间层维度是hidden_size的$\frac{8}{3}$倍左右，和4倍大小的中间层的参数量和计算量相当）。
+可以看到Llama的MLP层使用了GLU的结构，即带有一个门控机制。
+
+实际中会调整中间层的大小，来使得参数量和计算量与原始的FFN实现相当（常见的中间层维度是hidden_size的$\frac{8}{3}$倍左右，和原始4倍大小的中间层的参数量和计算量相当）。
 
 #### Rotary Embedding
 
 Llama的位置编码
+
+roformer的文章在本blog撰写时候，公式部分的记号还是稍微有些混乱，需要静下心来看明白。
+
+#### Pre-LayerNorm
+
+原始的Transformer使用post-layernorm，研究表明pre-layernorm会使得训练更加稳定[^prenorm]。
+
+<figure markdown>
+  ![pre-layernorm](./pre_ln.png){width="400"}
+
+  左侧为post-layernorm，右侧为pre-layernorm[^prenorm]
+</figure>
+
+#### LlamaAttention
+
+现在我们走一遍前向过程
 
 ## 本文未讨论的内容
 
@@ -232,6 +246,8 @@ Llama的位置编码
 ## 延伸阅读
 
 [Andrej Karpathy的Youtube频道](https://www.youtube.com/@AndrejKarpathy)中有手撕GPT代码的教程，强烈推荐观看。
+
+[Meta开源的llama代码](https://github.com/facebookresearch/llama)
 
 
 
