@@ -221,9 +221,117 @@ class LlamaMLP(nn.Module):
 
 #### Rotary Embedding
 
-Llama的位置编码
+由于Transformer的Attention计算是不带有位置信息的，所以我们需要通过某种方法让模型能够感知到位置信息，这个技术被称为位置编码。位置编码的实现方式有很多种，从最早的绝对位置编码[^attention]，到相对位置编码，再到Llama使用的旋转位置编码[^rope]。
 
-roformer的文章在本blog撰写时候，公式部分的记号还是稍微有些混乱，需要静下心来看明白。
+提出旋转位置编码的文章[^rope]在本blog撰写时候，公式部分的记号还是稍微有些混乱，需要静下心来看明白。
+
+```python title="modeling_llama.py" linenums="173"
+def rotate_half(x):
+    """Rotates half the hidden dims of the input."""
+    x1 = x[..., : x.shape[-1] // 2]
+    x2 = x[..., x.shape[-1] // 2 :]
+    return torch.cat((-x2, x1), dim=-1)
+
+
+def apply_rotary_pos_emb(q, k, cos, sin, position_ids):
+    # The first two dimensions of cos and sin are always 1, so we can `squeeze` them.
+    cos = cos.squeeze(1).squeeze(0)  # [seq_len, dim]
+    sin = sin.squeeze(1).squeeze(0)  # [seq_len, dim]
+    cos = cos[position_ids].unsqueeze(1)  # [bs, 1, seq_len, dim]
+    sin = sin[position_ids].unsqueeze(1)  # [bs, 1, seq_len, dim]
+    q_embed = (q * cos) + (rotate_half(q) * sin)
+    k_embed = (k * cos) + (rotate_half(k) * sin)
+    return q_embed, k_embed
+```
+
+#### LlamaAttention
+
+LlamaAttention的主要参数为四个hidden_size * hidden_size的映射矩阵，用于实现多头注意力。
+
+```python title="modeling_llama.py" linenums="233" hl_lines="20-23"
+class LlamaAttention(nn.Module):
+    """Multi-headed attention from 'Attention Is All You Need' paper"""
+
+    def __init__(self, config: LlamaConfig):
+        super().__init__()
+        self.config = config
+        self.hidden_size = config.hidden_size
+        self.num_heads = config.num_attention_heads
+        self.head_dim = self.hidden_size // self.num_heads
+        self.num_key_value_heads = config.num_key_value_heads
+        self.num_key_value_groups = self.num_heads // self.num_key_value_heads
+        self.pretraining_tp = config.pretraining_tp
+        self.max_position_embeddings = config.max_position_embeddings
+
+        if (self.head_dim * self.num_heads) != self.hidden_size:
+            raise ValueError(
+                f"hidden_size must be divisible by num_heads (got `hidden_size`: {self.hidden_size}"
+                f" and `num_heads`: {self.num_heads})."
+            )
+        self.q_proj = nn.Linear(self.hidden_size, self.num_heads * self.head_dim, bias=False)
+        self.k_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=False)
+        self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=False)
+        self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=False)
+        self._init_rope()
+```
+
+现在我们走一遍Attention的前向计算过程。首先先明确每个Attention Block的输入维度为batch_size * seq_len * hidden_size
+
+```python title="modeling_llama.py" linenums="278" hl_lines="10"
+    def forward(
+        self,
+        hidden_states: torch.Tensor,
+        attention_mask: Optional[torch.Tensor] = None,
+        position_ids: Optional[torch.LongTensor] = None,
+        past_key_value: Optional[Tuple[torch.Tensor]] = None,
+        output_attentions: bool = False,
+        use_cache: bool = False,
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
+        bsz, q_len, _ = hidden_states.size()
+```
+
+对输入进行映射，输出维度为batch_size * seq_len * hidden_size
+
+```python title="modeling_llama.py" linenums="305"
+            query_states = self.q_proj(hidden_states)
+            key_states = self.k_proj(hidden_states)
+            value_states = self.v_proj(hidden_states)
+```
+
+拆分出每一个头的输出，此时输出维度变为batch_size * num_heads * seq_len * head_dim
+
+```python title="modeling_llama.py" linenums="309"
+        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
+        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+```
+
+在应用了旋转位置编码后，计算attn_weights，其维度为batch_size * num_heads * seq_len * seq_len
+
+```python title="modeling_llama.py" linenums="330"
+        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
+```
+
+计算attention的输出，其维度为batch_size * num_heads * seq_len * head_dim
+
+```python title="modeling_llama.py" linenums="345"
+        # upcast attention to fp32
+        attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
+        attn_output = torch.matmul(attn_weights, value_states)
+```
+
+将多头输出cat到一起，注意这里需要使用contiguous，输出维度为batch_size * seq_len * hidden_size
+
+```python title="modeling_llama.py" linenums="355"
+        attn_output = attn_output.transpose(1, 2).contiguous()
+        attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
+```
+
+最后将输出通过o_proj的映射，得到维度为batch_size * seq_len * hidden_size
+
+```python title="modeling_llama.py" linenums="363"
+            attn_output = self.o_proj(attn_output)
+```
 
 #### Pre-LayerNorm
 
@@ -235,9 +343,30 @@ roformer的文章在本blog撰写时候，公式部分的记号还是稍微有�
   左侧为post-layernorm，右侧为pre-layernorm[^prenorm]
 </figure>
 
-#### LlamaAttention
+可以看到pre-layernorm是加在Attention和MLP之前的：
 
-现在我们走一遍前向过程
+```python title="modeling_llama.py" linenums="363"
+        residual = hidden_states
+
+        hidden_states = self.input_layernorm(hidden_states)
+
+        # Self Attention
+        hidden_states, self_attn_weights, present_key_value = self.self_attn(
+            hidden_states=hidden_states,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            past_key_value=past_key_value,
+            output_attentions=output_attentions,
+            use_cache=use_cache,
+        )
+        hidden_states = residual + hidden_states
+
+        # Fully Connected
+        residual = hidden_states
+        hidden_states = self.post_attention_layernorm(hidden_states)
+        hidden_states = self.mlp(hidden_states)
+        hidden_states = residual + hidden_states
+```
 
 ## 本文未讨论的内容
 
@@ -258,3 +387,4 @@ roformer的文章在本blog撰写时候，公式部分的记号还是稍微有�
 [^rmsnorm]: Zhang et al. [Root Mean Square Layer Normalization](https://papers.nips.cc/paper_files/paper/2019/file/1e8a19426224ca89e83cef47f1e7f53b-Paper.pdf) (NIPS 2019)
 [^swiglu]: Shazeer et al. [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202) (arXiv 2020)
 [^prenorm]: Xiong et al. [On Layer Normalization in the Transformer Architecture](http://proceedings.mlr.press/v119/xiong20b/xiong20b.pdf) (ICML 2020)
+[^rope]: Su et al. [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864) (arXiv 2021)
