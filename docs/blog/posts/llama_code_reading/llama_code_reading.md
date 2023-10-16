@@ -368,6 +368,25 @@ class LlamaAttention(nn.Module):
         hidden_states = residual + hidden_states
 ```
 
+#### Language modeling loss
+
+当输入了labels时，LlamaForCausalLM会在每一个token位置计算下一个token的输出损失，注意这里logits和labels是需要错开一位的。
+
+```python title="modeling_llama.py" linenums="827" hl_lines="4 5"
+        loss = None
+        if labels is not None:
+            # Shift so that tokens < n predict n
+            shift_logits = logits[..., :-1, :].contiguous()
+            shift_labels = labels[..., 1:].contiguous()
+            # Flatten the tokens
+            loss_fct = CrossEntropyLoss()
+            shift_logits = shift_logits.view(-1, self.config.vocab_size)
+            shift_labels = shift_labels.view(-1)
+            # Enable model parallelism
+            shift_labels = shift_labels.to(shift_logits.device)
+            loss = loss_fct(shift_logits, shift_labels)
+```
+
 ## 本文未讨论的内容
 
 大模型的并行训练与推理，作为未来的学习计划
