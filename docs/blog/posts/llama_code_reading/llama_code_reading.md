@@ -1,6 +1,6 @@
 ---
 date: 2023-09-29
-readtime: 30
+readtime: 60
 authors:
   - ludwig
 categories:
