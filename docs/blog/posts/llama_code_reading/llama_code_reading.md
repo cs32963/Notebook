@@ -11,7 +11,7 @@ categories:
 
 [Llama](https://ai.meta.com/blog/large-language-model-llama-meta-ai/)[^llama]是由Meta设计，训练并开源的大语言模型。相比于GPT-3，Llama模型更小，但是训练更加充分，性能更强，是开源社区最受欢迎的大模型之一。
 
-本文主要阅读[Huggingface的Llama实现](https://huggingface.co/docs/transformers/v4.31.0/model_doc/llama)，重点关注相对于最早的Transformer[^attention]，Llama采用了哪些新的技术和优化。
+本文主要阅读[Huggingface的Llama实现](https://huggingface.co/docs/transformers/v4.31.0/model_doc/llama)，重点关注相对于最早的Transformer[^attention]，Llama采用了哪些新的技术和优化。此外，这份代码也兼容[Llama2](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/)[^llama2]的实现，具体表现在grouped query attention的实现上。
 
 <!-- more -->
 
@@ -246,7 +246,7 @@ def apply_rotary_pos_emb(q, k, cos, sin, position_ids):
 
 #### LlamaAttention
 
-LlamaAttention的主要参数为四个hidden_size * hidden_size的映射矩阵，用于实现多头注意力。
+LlamaAttention的主要参数为四个映射矩阵，用于实现多头注意力。
 
 ```python title="modeling_llama.py" linenums="233" hl_lines="20-23"
 class LlamaAttention(nn.Module):
@@ -275,6 +275,8 @@ class LlamaAttention(nn.Module):
         self._init_rope()
 ```
 
+这里需要注意的是k_proj和v_proj并不一定是hidden_size * (num_heads * head_dim)的，这是因为Llama2使用了grouped query attention，即一些头共享了k和v的映射，这里的num_key_value_heads是真正的k和v头的个数。当num_key_value_heads等于num_heads时，就是最经典的多头注意力。
+
 现在我们走一遍Attention的前向计算过程。首先先明确每个Attention Block的输入维度为batch_size * seq_len * hidden_size
 
 ```python title="modeling_llama.py" linenums="278" hl_lines="10"
@@ -290,7 +292,7 @@ class LlamaAttention(nn.Module):
         bsz, q_len, _ = hidden_states.size()
 ```
 
-对输入进行映射，输出维度为batch_size * seq_len * hidden_size
+对输入进行映射，如果使用了grouped query attention，那么key_states和value_states的输出维度为batch_size * seq_len * (num_key_value_heads * head_dim)，其余情况为输出维度为batch_size * seq_len * (num_heads * head_dim)
 
 ```python title="modeling_llama.py" linenums="305"
             query_states = self.q_proj(hidden_states)
@@ -298,7 +300,7 @@ class LlamaAttention(nn.Module):
             value_states = self.v_proj(hidden_states)
 ```
 
-拆分出每一个头的输出，此时输出维度变为batch_size * num_heads * seq_len * head_dim
+拆分出每一个头的输出，此时输出维度变为batch_size * num_heads * seq_len * head_dim或batch_size * num_key_value_heads * seq_len * head_dim
 
 ```python title="modeling_llama.py" linenums="309"
         query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
@@ -306,7 +308,22 @@ class LlamaAttention(nn.Module):
         value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
 ```
 
-在应用了旋转位置编码后，计算attn_weights，其维度为batch_size * num_heads * seq_len * seq_len
+计算旋转位置编码
+
+```python title="modeling_llama.py" linenums="309"
+        cos, sin = self.rotary_emb(value_states, seq_len=kv_seq_len)
+        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
+```
+
+如果使用了grouped query attention，则拷贝key_states和value_states，此时key_states和value_states的维度变为batch_size * num_heads * seq_len * head_dim
+
+```python title="modeling_llama.py" linenums="326"
+        # repeat k/v heads if n_kv_heads < n_heads
+        key_states = repeat_kv(key_states, self.num_key_value_groups)
+        value_states = repeat_kv(value_states, self.num_key_value_groups)
+```
+
+计算attention weights的logits，其维度为batch_size * num_heads * seq_len * seq_len
 
 ```python title="modeling_llama.py" linenums="330"
         attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
@@ -401,6 +418,7 @@ class LlamaAttention(nn.Module):
 
 
 [^llama]: Touvron et al. [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) (arXiv 2023)
+[^llama2]: Touvron et al. [Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/pdf/2307.09288.pdf) (arXiv 2023)
 [^attention]: Vaswani et al. [Attention Is All You Need.](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf) (NIPS 2017)
 [^layernorm]: Ba et al. [Layer Normalization](https://arxiv.org/abs/1607.06450) (arXiv 2023)
 [^rmsnorm]: Zhang et al. [Root Mean Square Layer Normalization](https://papers.nips.cc/paper_files/paper/2019/file/1e8a19426224ca89e83cef47f1e7f53b-Paper.pdf) (NIPS 2019)
