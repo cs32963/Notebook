@@ -120,7 +120,7 @@ nav:
   - 编程语言:
     - C++: programming_languages/c++.md
     - Python: programming_languages/python.md
-  - 其他:
-    - 访谈与演讲: miscellanies/talks.md
+  - 日常笔记:
+    - 访谈与演讲: regular/talks.md
   - 博客:
     - blog/index.md
