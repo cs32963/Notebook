@@ -323,6 +323,21 @@ class LlamaAttention(nn.Module):
         value_states = repeat_kv(value_states, self.num_key_value_groups)
 ```
 
+下面是repeat_kv的代码实现，这里[使用了None来增加一个维度](https://stackoverflow.com/questions/69797614/indexing-a-tensor-with-none-in-pytorch)，再使用expand拷贝了（[其实没有真的拷贝内存](https://pytorch.org/docs/stable/generated/torch.Tensor.expand.html)）那些共享的头输出。
+
+```python title="modeling_llama.py" linenums="221"
+def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
+    """
+    This is the equivalent of torch.repeat_interleave(x, dim=1, repeats=n_rep). The hidden states go from (batch,
+    num_key_value_heads, seqlen, head_dim) to (batch, num_attention_heads, seqlen, head_dim)
+    """
+    batch, num_key_value_heads, slen, head_dim = hidden_states.shape
+    if n_rep == 1:
+        return hidden_states
+    hidden_states = hidden_states[:, :, None, :, :].expand(batch, num_key_value_heads, n_rep, slen, head_dim)
+    return hidden_states.reshape(batch, num_key_value_heads * n_rep, slen, head_dim)
+```
+
 计算attention weights的logits，其维度为batch_size * num_heads * seq_len * seq_len
 
 ```python title="modeling_llama.py" linenums="330"
@@ -337,7 +352,7 @@ class LlamaAttention(nn.Module):
         attn_output = torch.matmul(attn_weights, value_states)
 ```
 
-将多头输出cat到一起，注意这里需要使用contiguous，输出维度为batch_size * seq_len * hidden_size
+将多头输出cat到一起（注意这里356行如果使用了view的话355行需要使用contiguous，如果使用reshape其实不写contiguous也可以），输出维度为batch_size * seq_len * hidden_size
 
 ```python title="modeling_llama.py" linenums="355"
         attn_output = attn_output.transpose(1, 2).contiguous()
