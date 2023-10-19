@@ -6,7 +6,7 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
-    - navigation.sections
+    - navigation.expand
     - navigation.top
     - search.suggest
     - search.highlight
@@ -119,5 +119,5 @@ nav:
     - 题单:
       - Codeforces: algorithms/codeforces_problem_list.md
       - LeetCode: algorithms/leetcode_problem_list.md
-  - 文章:
+  - 博客:
     - blog/index.md
