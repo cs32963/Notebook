@@ -1,5 +1,8 @@
 site_name: Ludwig's Notebook
 
+repo_url: https://github.com/cs32963/Notebook
+repo_name: cs32963/Notebook
+
 theme:
   name: material
   language: zh
