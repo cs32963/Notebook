@@ -310,7 +310,7 @@ class LlamaAttention(nn.Module):
 
 计算旋转位置编码
 
-```python title="modeling_llama.py" linenums="309"
+```python title="modeling_llama.py" linenums="316"
         cos, sin = self.rotary_emb(value_states, seq_len=kv_seq_len)
         query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
 ```
