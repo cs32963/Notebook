@@ -1,5 +1,7 @@
 ---
-date: 2023-05-23
+date:
+  created: 2023-05-23
+  updated: 2023-10-19
 readtime: 5
 authors:
   - ludwig
