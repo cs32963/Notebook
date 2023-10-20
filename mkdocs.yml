@@ -108,6 +108,7 @@ nav:
       - 动态规划: algorithms/dp.md
       - 贪心: algorithms/greedy.md
       - 二分: algorithms/binary_search.md
+      - 双指针/滑动窗口: algorithms/two_pointers.md
       - 单调栈: algorithms/monotonic_stack.md
       - 搜索: algorithms/search.md
       - 位运算: algorithms/bitwise_ops.md
