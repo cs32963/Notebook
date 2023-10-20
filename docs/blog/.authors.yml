@@ -2,6 +2,6 @@ authors:
   ludwig:
     name: Ludwig
     description: Creator
-    # using this url will be faster, but the better solution is to use relative path, which is not supported yet
+    # using this url should be faster, but the better solution is to use relative path, which is not supported yet
     avatar: https://cs32963.github.io/Notebook/blog/avatar.png
     # avatar: https://github.com/cs32963.png
