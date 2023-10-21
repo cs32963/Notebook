@@ -112,6 +112,7 @@ nav:
       - 单调栈: algorithms/monotonic_stack.md
       - 搜索: algorithms/search.md
       - 位运算: algorithms/bitwise_ops.md
+      - 并查集: algorithms/union_find.md
     - 有趣的问题:
       - 蚂蚁行进问题: algorithms/ants.md
       - 约瑟夫问题: algorithms/josephus.md
