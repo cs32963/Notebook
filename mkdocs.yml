@@ -96,11 +96,16 @@ nav:
     - 写在前面: index.md
     - 学生生涯反思: retrospect.md
     - 如何成为优秀的算法工程师: become_better.md
-  - 课程学习:
+  - 课程笔记:
     - 计算机系统导论:
-      - 引言: notes/cs_intro/intro.md
+      - 引言: notes/cs_intro/index.md
     - 操作系统:
-      - 引言: notes/os/intro.md
+      - 引言: notes/os/index.md
+  - 编程语言:
+    - Python:
+      - 引言: programming_languages/python/index.md
+    - C++:
+      - 引言: programming_languages/c++/index.md
   - 算法学习:
     - 坚持刷算法题的好处: algorithms/index.md
     - 学习路线: algorithms/roadmap.md
@@ -119,9 +124,6 @@ nav:
     - 题单:
       - Codeforces: algorithms/codeforces_problem_list.md
       - LeetCode: algorithms/leetcode_problem_list.md
-  - 编程语言:
-    - C++: programming_languages/c++.md
-    - Python: programming_languages/python.md
   - 日常笔记:
     - 访谈与演讲: regular/talks.md
   - 博客:
