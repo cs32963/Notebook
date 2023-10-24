@@ -104,6 +104,7 @@ nav:
   - 编程语言:
     - Python:
       - 引言: programming_languages/python/index.md
+      - Craftsmanship: programming_languages/python/craftsmanship.md
     - C++:
       - 引言: programming_languages/c++/index.md
   - 算法学习:
