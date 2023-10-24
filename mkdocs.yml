@@ -108,8 +108,8 @@ nav:
     - C++:
       - 引言: programming_languages/c++/index.md
   - 算法学习:
-    - 坚持刷算法题的好处: algorithms/index.md
     - 学习路线: algorithms/roadmap.md
+    - 坚持刷算法题的好处: algorithms/index.md
     - 常见算法:
       - 动态规划: algorithms/dp.md
       - 贪心: algorithms/greedy.md
