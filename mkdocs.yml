@@ -117,6 +117,7 @@ nav:
       - 双指针/滑动窗口: algorithms/two_pointers.md
       - 单调栈: algorithms/monotonic_stack.md
       - 搜索: algorithms/search.md
+      - 递归: algorithms/recursion.md
       - 位运算: algorithms/bitwise_ops.md
       - 并查集: algorithms/union_find.md
     - 有趣的问题:

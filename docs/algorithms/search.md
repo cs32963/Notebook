@@ -1,7 +1,5 @@
 # 搜索
 
-[LeetCode 865 - 具有所有最深节点的最小子树](https://leetcode.cn/problems/smallest-subtree-with-all-the-deepest-nodes/)
-
 [CF1873H - Mad City](https://codeforces.com/contest/1873/problem/H) (1)
 {.annotate}
 
