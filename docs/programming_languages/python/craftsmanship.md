@@ -1,6 +1,6 @@
 # Craftsmanship
 
-一些优化Python代码的技巧
+一些优化Python代码可读性或执行效率的技巧
 
 ## 基本
 
@@ -10,10 +10,13 @@
 
 ```python title="comprehension.py" linenums="1"
 # list comprehension
-a = [i for i in range(10) if i % 2 == 0]
+l = [i for i in range(10) if i % 2 == 0]
 
 # dict comprehension
 d = {i:i**2 for i in range(10)}
+
+# set comprehension
+s = {i**2 for i in range(10)}
 ```
 
 ### enumerate
