@@ -126,7 +126,7 @@ nav:
     - 题单:
       - Codeforces: algorithms/codeforces_problem_list.md
       - LeetCode: algorithms/leetcode_problem_list.md
-  - 日常笔记:
+  - 学习资源:
     - 访谈与演讲: regular/talks.md
   - 博客:
     - blog/index.md
