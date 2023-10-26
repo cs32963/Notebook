@@ -1,5 +1,9 @@
 # 搜索
 
+## 题单
+
+:star::star::star::star::star:
+
 [CF1873H - Mad City](https://codeforces.com/contest/1873/problem/H) (1)
 {.annotate}
 

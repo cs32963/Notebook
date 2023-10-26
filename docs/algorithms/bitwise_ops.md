@@ -15,6 +15,8 @@
 
 1. 单独考虑每一位对最终答案的贡献，并使用线性复杂度计算之
 
-## 其他
+## 题单
+
+:star::star::star::star::star:
 
 [LeetCode 260 - 只出现一次的数字 III](https://leetcode.cn/problems/single-number-iii/)
