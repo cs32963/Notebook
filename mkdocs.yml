@@ -118,6 +118,7 @@ nav:
       - 单调栈: algorithms/monotonic_stack.md
       - 搜索: algorithms/search.md
       - 递归: algorithms/recursion.md
+      - 图算法: algorithms/graph.md
       - 位运算: algorithms/bitwise_ops.md
       - 并查集: algorithms/union_find.md
     - 有趣的问题:
