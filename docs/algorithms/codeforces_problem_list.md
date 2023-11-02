@@ -16,10 +16,16 @@
 
 :star::star::star::star:
 
+[CF1864C - Divisor Chain](https://codeforces.com/contest/1864/problem/C) (1)
+{.annotate}
+
+1. $x=2^n*l$，先一步步将$l$减一，并剥离因子2，得到一个2的幂次，再依次减去2幂次的一半最后得到1
+
 [CF1873G - ABBC or BACB](https://codeforces.com/contest/1873/problem/G) (1)
 {.annotate}
 
 1. 考察基本的从特殊到一般的问题分析能力
+
 [CF1879B - Chips on the Board](https://codeforces.com/contest/1879/problem/B) (1)
 {.annotate}
 
