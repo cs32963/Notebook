@@ -108,19 +108,24 @@ nav:
     - C++:
       - 引言: programming_languages/c++/index.md
   - 算法学习:
-    - 学习路线: algorithms/roadmap.md
+    - 学习建议: algorithms/advice.md
     - 坚持刷算法题的好处: algorithms/index.md
-    - 常见算法:
-      - 动态规划: algorithms/dp.md
+    - 基础:
       - 贪心: algorithms/greedy.md
+      - 递归: algorithms/recursion.md
       - 二分: algorithms/binary_search.md
       - 双指针/滑动窗口: algorithms/two_pointers.md
-      - 单调栈: algorithms/monotonic_stack.md
-      - 图算法: algorithms/graph.md
-      - 递归: algorithms/recursion.md
       - 位运算: algorithms/bitwise_ops.md
+      - 深度优先搜索: algorithms/dfs.md
+      - 广度优先搜索: algorithms/bfs.md
+      - 动态规划:
+        - 线性: algorithms/dp.md
+        - 背包: algorithms/backpack.md
+        - 区间: algorithms/interval.md
+      - 单调栈: algorithms/monotonic_stack.md
+    - 进阶:
+      - 图算法: algorithms/graph.md
       - 并查集: algorithms/union_find.md
-      - 搜索回溯: algorithms/search.md
     - 有趣的问题:
       - 蚂蚁行进问题: algorithms/ants.md
       - 约瑟夫问题: algorithms/josephus.md
