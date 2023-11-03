@@ -1,8 +1,8 @@
-# 线性dp
+# 状态机dp
 
-## 知识点
+## 题单
 
-### 状态机dp
+:star::star::star::star::star:
 
 [LeetCode 188 - 买卖股票的最佳时机 IV](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/)
 
