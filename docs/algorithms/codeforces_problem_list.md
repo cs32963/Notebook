@@ -2,6 +2,11 @@
 
 :star::star::star::star::star:
 
+[CF1878B - Aleksa and Stack](https://codeforces.com/contest/1878/problem/B) (1)
+{.annotate}
+
+1. 奇数序列就可以了，不要把问题处理得很复杂
+
 [CF1870D - Prefix Purchase](https://codeforces.com/contest/1870/problem/D)
 
 [CF1872F - Selling a Menagerie](https://codeforces.com/problemset/problem/1872/F) (1)
