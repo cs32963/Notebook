@@ -124,7 +124,9 @@ nav:
         - 状态机: algorithms/state_dp.md
       - 单调栈: algorithms/monotonic_stack.md
     - 进阶:
-      - 图算法: algorithms/graph.md
+      - 图算法:
+        - 拓扑排序: algorithms/topological_order.md
+        - 单源最短路: algorithms/shortest_path.md
       - 并查集: algorithms/union_find.md
     - 有趣的问题:
       - 蚂蚁行进问题: algorithms/ants.md
