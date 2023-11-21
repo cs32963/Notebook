@@ -1,5 +1,19 @@
 # 访谈与演讲
 
+## [No Priors Ep. 39 | With OpenAI Co-Founder & Chief Scientist Ilya Sutskever (2023.11.2)](https://www.youtube.com/watch?v=Ft0gTO2K85A)
+
+OpenAI首席科学家Ilya Sutskever的访谈，个人觉得他是一个能看到未来的的科学家。Ilya的观点和老师Hinton的观点比较接近，对AI可能造成的后果持担忧态度，并且非常重视AGI的对齐工作。
+
+> 1. The idea of training bigger networks on bigger datasets dates long before the discovery of scaling law of BERT model.
+>
+> 2. GPT model family was built, because **OpenAI had a clear vision of how the first AGI system would look like**, it should be some kind of large, power-hungry data center. Those incremental academic progress was just not the way AGI would be.
+>
+> 3. Sutskever finds the fact that scaling up neural networks works at all to be the most surprising, given their history of failure.
+>
+> 4. Super alignment is the effort to ensure future super-intelligent AI systems have pro-social attitudes towards humanity.
+
+有AGI的世界会和之前的世界很不一样，抛开那些很宏大的话题，从每个人的角度来思考，个人觉得未来属于那些如何能够处理好和AGI的关系，来不断获得自我发展的人。也许就像老一辈人不太适应智能手机一样，我们这一辈人也许在后辈看来，也是不太能适应AGI的存在。
+
 ## [Geoffrey Hinton and Fei-Fei Li in conversation (2023.10.7)](https://www.youtube.com/watch?v=E14IsFbAbpI)
 
 两位学者从行业内推动者与见证者的角度讨论了AlexNet到ChatGPT这十年AI以及神经网络的发展历程，以及现状和未来。
