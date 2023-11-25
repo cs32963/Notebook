@@ -20,3 +20,8 @@
 :star::star::star::star::star:
 
 [LeetCode 260 - 只出现一次的数字 III](https://leetcode.cn/problems/single-number-iii/)
+
+[LeetCode 1457 - 二叉树中的伪回文路径](https://leetcode.cn/problems/pseudo-palindromic-paths-in-a-binary-tree/) (1)
+{.annotate}
+
+1. 一个数字的二进制表示中至多只有一个1这个性质等价于$num \& (num-1) == 0$
