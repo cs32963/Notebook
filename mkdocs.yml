@@ -135,8 +135,8 @@ nav:
       - Codeforces: algorithms/codeforces_problem_list.md
       - LeetCode: algorithms/leetcode_problem_list.md
   - 学习资源:
-    - 访谈与演讲: resources/talks.md
+    - 官方文档: resources/official_docs.md
     - 大厂技术博客: resources/technical_blogs.md
-    - 大厂官方文档: resources/official_docs.md
+    - 访谈与演讲: resources/talks.md
   - 博客:
     - blog/index.md
