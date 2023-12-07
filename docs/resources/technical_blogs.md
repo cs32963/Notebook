@@ -1,5 +1,9 @@
 # 大厂技术博客
 
+## [PyTorch - Introducing PyTorch Fully Sharded Data Parallel (FSDP) API - CUDA Refresher (2022)](https://pytorch.org/blog/introducing-pytorch-fully-sharded-data-parallel-api/)
+
+> With PyTorch 1.11 we’re adding native support for Fully Sharded Data Parallel (FSDP), currently available as a prototype feature. Its implementation heavily borrows from FairScale’s version while bringing more streamlined APIs and additional performance improvements.
+
 ## [NVIDIA - CUDA Refresher (2020)](https://developer.nvidia.com/blog/tag/cuda-refresher/)
 
 四篇CUDA科普博客
