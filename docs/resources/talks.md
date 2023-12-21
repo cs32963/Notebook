@@ -1,8 +1,12 @@
 # 访谈与演讲
 
+## [What runs ChatGPT? Inside Microsoft's AI supercomputer (2023.5.23)](https://www.youtube.com/watch?v=Ft0gTO2K85A)
+
+Get an inside look at the AI supercomputer infrastructure built to run ChatGPT and other large language models, and see how to leverage it for your workloads in Azure, at any scale. 
+
 ## [No Priors Ep. 39 | With OpenAI Co-Founder & Chief Scientist Ilya Sutskever (2023.11.2)](https://www.youtube.com/watch?v=Ft0gTO2K85A)
 
-OpenAI首席科学家Ilya Sutskever的访谈，个人觉得他是一个能看到未来的的科学家。Ilya的观点和老师Hinton的观点比较接近，对AI可能造成的后果持担忧态度，并且非常重视AGI的对齐工作。
+OpenAI首席科学家Ilya Sutskever的访谈。Ilya的观点和老师Hinton的观点比较接近，对AI可能造成的后果持担忧态度，并且非常重视AGI的对齐工作。
 
 > 1. The idea of training bigger networks on bigger datasets dates long before the discovery of scaling law of BERT model.
 >
