@@ -94,19 +94,6 @@ copyright: |
 nav:
   - 主页: 
     - 写在前面: index.md
-    - 学生生涯反思: retrospect.md
-    - 如何成为优秀的算法工程师: become_better.md
-  - 课程笔记:
-    - 计算机系统导论:
-      - 引言: notes/cs_intro/index.md
-    - 操作系统:
-      - 引言: notes/os/index.md
-  - 编程语言:
-    - Python:
-      - 引言: programming_languages/python/index.md
-      - Craftsmanship: programming_languages/python/craftsmanship.md
-    - C++:
-      - 引言: programming_languages/c++/index.md
   - 算法学习:
     - 引言: algorithms/index.md
     - 基础:
