@@ -26,6 +26,8 @@
 
 :star::star::star::star:
 
+[CF1914D - Three Activities](https://codeforces.com/contest/1914/problem/D)
+
 [CF1864C - Divisor Chain](https://codeforces.com/contest/1864/problem/C) (1)
 {.annotate}
 
