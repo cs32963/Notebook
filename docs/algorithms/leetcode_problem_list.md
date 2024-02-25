@@ -2,6 +2,8 @@
 
 :star::star::star::star::star:
 
+[LeetCode 236 - 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/description/)
+
 [LeetCode 765 - 情侣牵手](https://leetcode.cn/problems/couples-holding-hands/) (1)
 {.annotate}
 
